@@ -1,0 +1,150 @@
+package core
+
+import (
+	"context"
+
+	"github.com/hbollon/go-edlib/v2/algorithms"
+)
+
+// DistanceCalculator defines the interface for edit distance algorithms
+type DistanceCalculator interface {
+	// Distance computes the edit distance between two strings
+	Distance(s1, s2 string) int
+
+	// DistanceWithContext computes the edit distance with context for cancellation
+	DistanceWithContext(ctx context.Context, s1, s2 string) (int, error)
+
+	// MaxDistance returns the maximum possible distance for two strings
+	MaxDistance(s1, s2 string) int
+
+	// Name returns the algorithm name
+	Name() string
+
+	// Properties returns the algorithm properties
+	Properties() algorithms.AlgorithmProperties
+}
+
+// SimilarityCalculator defines the interface for similarity algorithms
+type SimilarityCalculator interface {
+	// Similarity computes the similarity score [0.0 to 1.0] between two strings
+	Similarity(s1, s2 string) float64
+
+	// SimilarityWithContext computes the similarity with context for cancellation
+	SimilarityWithContext(ctx context.Context, s1, s2 string) (float64, error)
+
+	// Name returns the algorithm name
+	Name() string
+
+	// Properties returns the algorithm properties
+	Properties() algorithms.AlgorithmProperties
+}
+
+// Calculator combines both distance and similarity calculation
+type Calculator interface {
+	DistanceCalculator
+	SimilarityCalculator
+}
+
+// OptimizedCalculator extends Calculator with optimization options
+type OptimizedCalculator interface {
+	Calculator
+
+	// WithThreshold sets a similarity threshold for early termination
+	WithThreshold(threshold float64) OptimizedCalculator
+
+	// WithMemoryPool enables memory pooling
+	WithMemoryPool(pool *MemoryPool) OptimizedCalculator
+
+	// WithEarlyTermination enables early termination optimization
+	WithEarlyTermination(enabled bool) OptimizedCalculator
+
+	// WithMaxDistance sets maximum distance for early termination
+	WithMaxDistance(maxDist int) OptimizedCalculator
+}
+
+// MetricsCalculator extends Calculator with metrics collection
+type MetricsCalculator interface {
+	Calculator
+
+	// DistanceWithMetrics computes distance and returns execution metrics
+	DistanceWithMetrics(s1, s2 string) (int, *Metrics)
+
+	// SimilarityWithMetrics computes similarity and returns execution metrics
+	SimilarityWithMetrics(s1, s2 string) (float64, *Metrics)
+}
+
+// ConfigurableCalculator allows runtime configuration
+type ConfigurableCalculator interface {
+	Calculator
+
+	// Configure applies configuration options
+	Configure(opts ...CalculatorOption) error
+
+	// Reset resets the calculator to default configuration
+	Reset()
+}
+
+// CalculatorOption is a function that configures a calculator
+type CalculatorOption func(Calculator) error
+
+// Common calculator options
+func WithThreshold(threshold float64) CalculatorOption {
+	return func(c Calculator) error {
+		if opt, ok := c.(OptimizedCalculator); ok {
+			opt.WithThreshold(threshold)
+			return nil
+		}
+		return nil
+	}
+}
+
+func WithMemoryPool() CalculatorOption {
+	return func(c Calculator) error {
+		if opt, ok := c.(OptimizedCalculator); ok {
+			opt.WithMemoryPool(GetGlobalMemoryPool())
+			return nil
+		}
+		return nil
+	}
+}
+
+func WithEarlyTermination() CalculatorOption {
+	return func(c Calculator) error {
+		if opt, ok := c.(OptimizedCalculator); ok {
+			opt.WithEarlyTermination(true)
+			return nil
+		}
+		return nil
+	}
+}
+
+func WithMaxDistance(maxDist int) CalculatorOption {
+	return func(c Calculator) error {
+		if opt, ok := c.(OptimizedCalculator); ok {
+			opt.WithMaxDistance(maxDist)
+			return nil
+		}
+		return nil
+	}
+}
+
+func WithCaseInsensitive() CalculatorOption {
+	return func(c Calculator) error {
+		// Implementation-specific
+		return nil
+	}
+}
+
+func WithWeights(weights interface{}) CalculatorOption {
+	return func(c Calculator) error {
+		// Implementation-specific
+		return nil
+	}
+}
+
+func WithMetrics() CalculatorOption {
+	return func(c Calculator) error {
+		// Implementation-specific
+		return nil
+	}
+}
