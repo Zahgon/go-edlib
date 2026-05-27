@@ -1,9 +1,5 @@
 package orderedmap
 
-import (
-	"sort"
-)
-
 type pair struct {
 	Key   string
 	Value float32
@@ -14,26 +10,20 @@ type pair struct {
 type OrderedMap []pair
 
 // Len return length of a given OrderedMap
-func (p OrderedMap) Len() int { return len(p) }
+func (p OrderedMap) Len() int {
+	_ = "STUB: not implemented"
 
-// Less return if a element of an OrderedMap is smaller than another
-func (p OrderedMap) Less(i, j int) bool { return p[i].Value < p[j].Value }
+	// Less return if a element of an OrderedMap is smaller than another
+	return 0
+}
+
+func (p OrderedMap) Less(i, j int) bool { _ = "STUB: not implemented"; return false }
 
 // Swap two members of an OrderedMap
-func (p OrderedMap) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+func (p OrderedMap) Swap(i, j int) { _ = "STUB: not implemented"; return }
 
 // ToArray export keys of an OrderedMap into a slice
-func (p OrderedMap) ToArray() []string {
-	mapSize := p.Len()
-	arr := make([]string, mapSize)
-	for i, elem := range p {
-		arr[i] = elem.Key
-	}
-
-	return arr
-}
+func (p OrderedMap) ToArray() []string { _ = "STUB: not implemented"; return nil }
 
 // SortByValues sort by values an OrderedMap in decreasing order
-func (p OrderedMap) SortByValues() {
-	sort.Sort(sort.Reverse(p))
-}
+func (p OrderedMap) SortByValues() { _ = "STUB: not implemented"; return }
